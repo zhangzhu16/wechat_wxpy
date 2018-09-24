@@ -3,4 +3,4 @@
 1.exvim
 __pycache__/
 wxpy.pkl
-
+*.wav

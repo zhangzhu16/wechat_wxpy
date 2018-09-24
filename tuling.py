@@ -1,10 +1,9 @@
 import os
-import json
 import time
 import random
 
 import requests
-from wxpy import *
+from wxpy import Bot, Friend, TEXT, MAP, CARD, NOTE, SHARING, PICTURE, RECORDING, ATTACHMENT, VIDEO, FRIENDS, embed
 
 from baiduyuyin import post_recording, text_to_audio, get_response
 
@@ -12,12 +11,21 @@ pics = ([str(i) + '.gif' for i in range(1, 10)] +
         [str(j) + '.jpeg' for j in range(1, 4)] +
         [str(k) + '.jpg' for k in range(1, 3)])
 
-
 bot=Bot(cache_path=True)
 
-group_1 = bot.groups().search('一家人')[0]
-group_2 = bot.groups().search('南山高新园野区战斗群')[0]
-group_3 = bot.groups().search('一家亲')[0]
+groups = []
+group_1 = bot.groups().search('Iprintf 的大蟒蛇')
+print(group_1)
+if group_1:
+    groups.append(group_1[0])
+#  group_2 = bot.groups().search('南山吃鸡战斗群')[0]
+group_3 = bot.groups().search('一家亲')
+if group_3:
+    groups.append(group_3[0])
+
+print(groups)
+
+
 
 @bot.register(chats=[Friend], msg_types=[TEXT, MAP, CARD, NOTE, SHARING, PICTURE, RECORDING, ATTACHMENT, VIDEO], except_self=False)
 def tuling_reply1(msg):
@@ -30,6 +38,8 @@ def tuling_reply1(msg):
         msg.get_file(msg.file_name)   # 下载语音
         recording_text = post_recording(msg.file_name)
         reply = get_response(recording_text)
+        #  text_to_audio(reply)
+        #  msg.chat.send_file('a.mp3')
         msg.chat.send(reply)
     elif msg.type == PICTURE:
         msg.chat.send_image('./biaoqing/' + random.choice(pics))
@@ -47,7 +57,7 @@ def tuling_reply1(msg):
     else:
         msg.chat.send(default_reply)
 
-@bot.register(chats=[group_1, group_2, group_3], msg_types=[TEXT, MAP, CARD, NOTE, SHARING, PICTURE, RECORDING, ATTACHMENT, VIDEO])
+@bot.register(chats=groups, msg_types=[TEXT, MAP, CARD, NOTE, SHARING, PICTURE, RECORDING, ATTACHMENT, VIDEO], except_self=True)
 def tuling_reply2(msg):
     default_reply = '我收到了 '
     print(msg)
@@ -63,7 +73,7 @@ def tuling_reply2(msg):
         msg.chat.send_image('./biaoqing/' + random.choice(pics))
     elif msg.type == NOTE:
         if '收到红包' in msg.text:
-            msg.chat.send('哈哈😄，老板发红包了!')
+            msg.chat.send('哈哈😄，大佬发红包了!')
             msg.chat.send_image('./biaoqing/hongbao.' + random.choice(['gif', 'jpeg']))
         if '撤回' in msg.text:
             msg.chat.send_image('./biaoqing/chehui.gif')
